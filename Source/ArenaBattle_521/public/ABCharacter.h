@@ -7,6 +7,7 @@
 * 낭떠러지에서 떨어지는 것을 확인할 수 있다.
 */
 #include "ArenaBattle_521.h"
+#include "ABAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "ABCharacter.generated.h"
 
@@ -51,6 +52,8 @@ public:
 	UCameraComponent* Camera;
 
 private:
+	virtual void PostInitializeComponents() override;
+
 	void UpDown(float _NewAxisValue);
 	void LeftRight(float _NewAxisValue);
 	void LookUp(float _NewAxisValue);

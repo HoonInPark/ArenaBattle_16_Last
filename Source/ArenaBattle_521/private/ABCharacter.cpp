@@ -30,6 +30,23 @@ AABCharacter::AABCharacter()
 	ArmRotationSpeed = 10.f;
 }
 
+#pragma region ForUE5
+void AABCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
+
+	if (!CurrentAnimInstance)
+	{
+		const UAnimInstance* pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
+		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
+	}
+	else
+		const UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
+}
+#pragma endregion ForUE5
+
 // Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
 {
