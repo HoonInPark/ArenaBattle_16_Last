@@ -39,4 +39,8 @@ public:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, Category=Camera)
 	UCameraComponent* Camera;
+
+private:
+	void UpDown(float _NewAxisValue);
+	void LeftRight(float _NewAxisValue);
 };
