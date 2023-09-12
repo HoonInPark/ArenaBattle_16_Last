@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArenaBattle_521.h"
+#include "GameFramework/RotatingMovementComponent.h"
 #include "GameFramework/Actor.h"
 #include "Fountain.generated.h"
 
@@ -38,6 +39,14 @@ public:
 	UPointLightComponent* Light;
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* Splash;
+
+	/*
+	* 위와 같이 Transform 정보가 필수적인 컴포넌트를 Scene Component라 하고, 
+	* MovementComponent와 같이 기능만 추가하는 것을 Actor Component라고 한다.
+	*/
+	UPROPERTY(VisibleAnywhere)
+	URotatingMovementComponent* Movement;
+
 	/*
 	* Component들은 위와 같이 선언한 뒤 에디터상에서 메시 같은 에셋을 배정해 줄 수 있었다.
 	* 근데 아래와 같이 int32형으로 선언된 ID 변수는 	UPROPERTY(VisibleAnywhere)라고 헤줘도 
@@ -47,4 +56,9 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, Category=ID)
 	int32 ID;
+
+private:
+	// 다음과 같이 매크로를 설정하면 에디터에선 편집이 가능하지만 다른 클래스에 이것을 private으로 은닉할 수 있다.
+	UPROPERTY(EditAnywhere, Category=Stat, Meta = (AllowPrivateAccess = true))
+	float RotateSpeed;
 };
