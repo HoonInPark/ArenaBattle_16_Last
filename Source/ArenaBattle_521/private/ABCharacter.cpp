@@ -47,6 +47,8 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AABCharacter::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AABCharacter::Turn);
 }
 
 void AABCharacter::UpDown(float _NewAxisValue)
@@ -58,5 +60,20 @@ void AABCharacter::UpDown(float _NewAxisValue)
 void AABCharacter::LeftRight(float _NewAxisValue)
 {
 	AddMovementInput(GetActorRightVector(), _NewAxisValue);
+}
+
+/*
+* 다음 AddController~Input은 마우스입력 신호값을 PlayerController의 컨트롤 회전 값으로 변경하는 함수이다.
+* 실행 중 마우스를 탈출시켜 ABPlayerController를 선택해 보면, 이것의 Transform 값이 
+* displayall PlayerController ControlRotation으로 나오는 값과 일치하는 것을 확인할 수 있다.
+*/
+void AABCharacter::LookUp(float _NewAxisValue)
+{
+	AddControllerPitchInput(_NewAxisValue);
+}
+
+void AABCharacter::Turn(float _NewAxisValue)
+{
+	AddControllerYawInput(_NewAxisValue);
 }
 
