@@ -25,7 +25,7 @@ AABCharacter::AABCharacter()
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
 	}
 
-	SetControlMode(0);
+	SetControlMode(EControlMode::DIABLO);
 }
 
 // Called when the game starts or when spawned
@@ -35,10 +35,13 @@ void AABCharacter::BeginPlay()
 	
 }
 
-void AABCharacter::SetControlMode(int32 _ControlMode)
+void AABCharacter::SetControlMode(EControlMode _NewControlMode)
 {
-	if (_ControlMode == 0)
+	CurrentControlMode = _NewControlMode;
+
+	switch (CurrentControlMode)
 	{
+	case AABCharacter::EControlMode::GTA:
 		SpringArm->TargetArmLength = 450.f;
 		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
 		SpringArm->bUsePawnControlRotation = true;
@@ -49,7 +52,21 @@ void AABCharacter::SetControlMode(int32 _ControlMode)
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
+		break;
+	case AABCharacter::EControlMode::DIABLO:
+		SpringArm->TargetArmLength = 800.f;
+		SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+		SpringArm->bUsePawnControlRotation = false;
+		SpringArm->bInheritPitch = false;
+		SpringArm->bInheritRoll = false;
+		SpringArm->bInheritYaw = false;
+		SpringArm->bDoCollisionTest = false;
+		bUseControllerRotationYaw = true;
+		break;
+	default:
+		break;
 	}
+
 }
 
 // Called every frame
@@ -57,6 +74,16 @@ void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::DIABLO:
+		if (DirectionToMove.SizeSquared() > 0.f)
+		{
+			GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator());
+			AddMovementInput(DirectionToMove);
+		}
+		break;
+	}
 }
 
 // Called to bind functionality to input
@@ -72,13 +99,11 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float _NewAxisValue)
 {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _NewAxisValue);
 
 }
 
 void AABCharacter::LeftRight(float _NewAxisValue)
 {
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _NewAxisValue);
 }
 
 #pragma region PlayerControllerControlRotation
@@ -89,12 +114,10 @@ void AABCharacter::LeftRight(float _NewAxisValue)
 */
 void AABCharacter::LookUp(float _NewAxisValue)
 {
-	AddControllerPitchInput(_NewAxisValue);
 }
 
 void AABCharacter::Turn(float _NewAxisValue)
 {
-	AddControllerYawInput(_NewAxisValue);
 }
 #pragma endregion PlayerControllerControlRotation
 
