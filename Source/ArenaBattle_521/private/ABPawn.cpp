@@ -82,11 +82,13 @@ void AABPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AABPawn::UpDown(float _NewAxisValue)
 {
-	ABLOG(Warning, TEXT("%f"), _NewAxisValue);
+	//ABLOG(Warning, TEXT("%f"), _NewAxisValue);
+	AddMovementInput(GetActorForwardVector(), _NewAxisValue);
 }
 
 void AABPawn::LeftRight(float _NewAxisValue)
 {
-	ABLOG(Warning, TEXT("%f"), _NewAxisValue);
+	//ABLOG(Warning, TEXT("%f"), _NewAxisValue);
+	AddMovementInput(GetActorRightVector(), _NewAxisValue);
 }
 
