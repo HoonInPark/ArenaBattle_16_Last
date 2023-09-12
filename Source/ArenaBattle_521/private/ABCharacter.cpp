@@ -24,6 +24,8 @@ AABCharacter::AABCharacter()
 	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
 	}
+
+	SetControlMode(0);
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +33,21 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AABCharacter::SetControlMode(int32 _ControlMode)
+{
+	if (_ControlMode == 0)
+	{
+		SpringArm->TargetArmLength = 450.f;
+		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+		SpringArm->bUsePawnControlRotation = true;
+		SpringArm->bInheritPitch = true;
+		SpringArm->bInheritRoll = true;
+		SpringArm->bInheritYaw = true;
+		SpringArm->bDoCollisionTest = true;
+		bUseControllerRotationYaw = false;
+	}
 }
 
 // Called every frame
@@ -62,6 +79,7 @@ void AABCharacter::LeftRight(float _NewAxisValue)
 	AddMovementInput(GetActorRightVector(), _NewAxisValue);
 }
 
+#pragma region PlayerControllerControlRotation
 /*
 * 다음 AddController~Input은 마우스입력 신호값을 PlayerController의 컨트롤 회전 값으로 변경하는 함수이다.
 * 실행 중 마우스를 탈출시켜 ABPlayerController를 선택해 보면, 이것의 Transform 값이 
@@ -76,4 +94,5 @@ void AABCharacter::Turn(float _NewAxisValue)
 {
 	AddControllerYawInput(_NewAxisValue);
 }
+#pragma endregion PlayerControllerControlRotation
 
