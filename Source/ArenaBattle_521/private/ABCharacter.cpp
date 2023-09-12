@@ -94,6 +94,7 @@ void AABCharacter::Tick(float DeltaTime)
 	switch (CurrentControlMode)
 	{
 	case AABCharacter::EControlMode::DIABLO:
+		// 책에서는 SpringArm->RelativeRotation라는 멤버에 접근하지만, 현 UE5 기준 이런건 없다...
 		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
 		break;
 	}
@@ -188,9 +189,11 @@ void AABCharacter::ViewChange()
 	switch (CurrentControlMode)
 	{
 	case EControlMode::GTA:
+		GetController()->SetControlRotation(GetActorRotation());
 		SetControlMode(EControlMode::DIABLO);
 		break;
 	case EControlMode::DIABLO:
+		GetController()->SetControlRotation(SpringArm->GetRelativeRotation());
 		SetControlMode(EControlMode::GTA);
 		break;
 	}

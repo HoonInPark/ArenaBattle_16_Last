@@ -33,7 +33,7 @@ protected:
 	EControlMode CurrentControlMode;
 	FVector DirectionToMove;
 
-	float ArmLength = 0.f;
+	float ArmLengthTo = 0.f;
 	FRotator ArmRotationTo = FRotator::ZeroRotator;
 	float ArmLengthSpeed = 0.f;
 	float ArmRotationSpeed = 0.f;
