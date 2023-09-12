@@ -46,7 +46,9 @@ void AABCharacter::SetControlMode(int32 _ControlMode)
 		SpringArm->bInheritRoll = true;
 		SpringArm->bInheritYaw = true;
 		SpringArm->bDoCollisionTest = true;
-		bUseControllerRotationYaw = false;
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 	}
 }
 
@@ -70,13 +72,13 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float _NewAxisValue)
 {
-	AddMovementInput(GetActorForwardVector(), _NewAxisValue);
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _NewAxisValue);
 
 }
 
 void AABCharacter::LeftRight(float _NewAxisValue)
 {
-	AddMovementInput(GetActorRightVector(), _NewAxisValue);
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _NewAxisValue);
 }
 
 #pragma region PlayerControllerControlRotation
