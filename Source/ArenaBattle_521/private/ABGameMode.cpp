@@ -11,3 +11,10 @@ AABGameMode::AABGameMode()
 	DefaultPawnClass = AABPawn::StaticClass();
 	PlayerControllerClass = AABPlayerController::StaticClass();
 }
+
+void AABGameMode::PostLogin(APlayerController* _NewPlayer)
+{
+	ABLOG(Warning, TEXT("PostLogin Begin"));
+	Super::PostLogin(_NewPlayer);
+	ABLOG(Warning, TEXT("PostLogin End"));
+}
