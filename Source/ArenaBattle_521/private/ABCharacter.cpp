@@ -63,8 +63,6 @@ void AABCharacter::SetControlMode(EControlMode _NewControlMode)
 		SpringArm->bDoCollisionTest = false;
 		bUseControllerRotationYaw = true;
 		break;
-	default:
-		break;
 	}
 
 }
@@ -99,11 +97,28 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AABCharacter::UpDown(float _NewAxisValue)
 {
-
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::GTA:
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _NewAxisValue);
+		break;
+	case AABCharacter::EControlMode::DIABLO:
+		DirectionToMove.X = _NewAxisValue;
+		break;
+	}
 }
 
 void AABCharacter::LeftRight(float _NewAxisValue)
 {
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::GTA:
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _NewAxisValue);
+		break;
+	case AABCharacter::EControlMode::DIABLO:
+		DirectionToMove.Y = _NewAxisValue;
+		break;
+	}
 }
 
 #pragma region PlayerControllerControlRotation
@@ -114,10 +129,22 @@ void AABCharacter::LeftRight(float _NewAxisValue)
 */
 void AABCharacter::LookUp(float _NewAxisValue)
 {
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::GTA:
+		AddControllerPitchInput(_NewAxisValue);
+		break;
+	}
 }
 
 void AABCharacter::Turn(float _NewAxisValue)
 {
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::GTA:
+		AddControllerYawInput(_NewAxisValue);
+		break;
+	}
 }
 #pragma endregion PlayerControllerControlRotation
 
