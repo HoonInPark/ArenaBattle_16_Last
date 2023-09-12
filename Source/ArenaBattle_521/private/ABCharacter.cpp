@@ -25,7 +25,9 @@ AABCharacter::AABCharacter()
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
 	}
 
-	SetControlMode(EControlMode::GTA);
+	SetControlMode(EControlMode::DIABLO);
+	ArmLengthSpeed = 3.f;
+	ArmRotationSpeed = 10.f;
 }
 
 // Called when the game starts or when spawned
@@ -42,44 +44,59 @@ void AABCharacter::SetControlMode(EControlMode _NewControlMode)
 	switch (CurrentControlMode)
 	{
 	case AABCharacter::EControlMode::GTA:
-		SpringArm->TargetArmLength = 450.f;
-		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+		//SpringArm->TargetArmLength = 450.f;
+		//SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+		ArmLengthTo = 450.f;
+		SpringArm->bUsePawnControlRotation = true; // WASD를 누름에 따라 Pawn의 정면 방향이 회전하는지 여부.
+		SpringArm->bInheritPitch = true; // 이것을 false로 설정하면 Pawn을 중심으로 공전하는 SpringArm의 Pitch 방향이 잠긴다.
+		SpringArm->bInheritRoll = true;
+		SpringArm->bInheritYaw = true;
+		SpringArm->bDoCollisionTest = true; // 카메라가 다른 물체와 충돌되는지 여부를 결정.
+
 		/*
-		 * 다음 옵션들에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
+		 * bUseControllerRotationYaw 옵션에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
 		 * Pawn 자체도 회전하는지 여부이다. 지구의 공전, 자전을 생각하면 개념을 이해하기 쉬울 것이다.
 		 * 여기 GTA 케이스 같은 경우는 카메라가 공전을 하지만 Character는 자전하지 않는다.
 		 * 이는 bUseControllerRotationYaw의 값을 변경해 보면서 그 이유를 확인해 볼 수 있다.
 		 * 마우스 입력 값을 폰의 정면방향을 돌리는 행위와 일치시킬지 여부를 결정하는 것이 이 변수값이다.
-		 * 만약 우리가 예시로 받은 3인칭 프로젝트처럼 Pawn의 방향은 오로지 WASD의 움직임으로만 결정하고
-		 * 이를 중심으로 한 시야는 마우스의 움직임을 따르도록 만들 수 있다.
 		 */
-		SpringArm->bUsePawnControlRotation = true;
-		SpringArm->bInheritPitch = true;
-		SpringArm->bInheritRoll = true;
-		SpringArm->bInheritYaw = true;
-		SpringArm->bDoCollisionTest = true; // 카메라가 다른 물체와 충돌되는지 여부를 결정.
 		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
+		// bUseControllerRotationYaw와 달리 여기선 WASD를 누름에 따라 Pawn의 정면방향을 회전할 것인지.
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 		break;
 	case AABCharacter::EControlMode::DIABLO:
-		SpringArm->TargetArmLength = 800.f;
-		SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+		//SpringArm->TargetArmLength = 800.f;
+		//SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+		ArmLengthTo = 800.f;
+		ArmRotationTo = FRotator(-45.f, 0.f, 0.f);
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->bInheritPitch = false;
 		SpringArm->bInheritRoll = false;
 		SpringArm->bInheritYaw = false;
 		SpringArm->bDoCollisionTest = false;
-		bUseControllerRotationYaw = true;
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 		break;
 	}
-
 }
 
 // Called every frame
 void AABCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, ArmLengthTo, DeltaTime, ArmLengthSpeed);
+
+	switch (CurrentControlMode)
+	{
+	case AABCharacter::EControlMode::DIABLO:
+		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
+		break;
+	}
 
 	switch (CurrentControlMode)
 	{
@@ -88,6 +105,7 @@ void AABCharacter::Tick(float DeltaTime)
 		* SizeSquared()는, DirectionToMove와 같은 벡터 데이터형식의 각 요소를 제곱하여 더한 다음 
 		* 그것의 제곱근을 구하는 것이다. 
 		* 간단히 말하면, 벡터의 크기를 구할 때 쓴다.
+		* FRotationMatrix::MakeFromX(DirectionToMove).Rotator()를 통해서는 WASD 값에서 Pawn의 회전 값을 도출해낸다.
 		*/
 		if (DirectionToMove.SizeSquared() > 0.f)
 		{
@@ -102,6 +120,8 @@ void AABCharacter::Tick(float DeltaTime)
 void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction(TEXT("ViewChange"), IE_Pressed, this, &AABCharacter::ViewChange);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AABCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AABCharacter::LeftRight);
@@ -160,5 +180,18 @@ void AABCharacter::Turn(float _NewAxisValue)
 		break;
 	}
 }
+
 #pragma endregion PlayerControllerControlRotation
 
+void AABCharacter::ViewChange()
+{
+	switch (CurrentControlMode)
+	{
+	case EControlMode::GTA:
+		SetControlMode(EControlMode::DIABLO);
+		break;
+	case EControlMode::DIABLO:
+		SetControlMode(EControlMode::GTA);
+		break;
+	}
+}
