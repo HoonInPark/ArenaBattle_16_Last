@@ -3,9 +3,11 @@
 
 #include "ABGameMode.h"
 #include "ABPawn.h"
+#include "ABPlayerController.h"
 
 AABGameMode::AABGameMode()
 {
 	// 다음은 폰을 월드상에 생성하고 이를 DefaultPawn로 지정하는 게 아니라, 클래스의 정보를 미리 저장하는 행우이다.
 	DefaultPawnClass = AABPawn::StaticClass();
+	PlayerControllerClass = AABPlayerController::StaticClass();
 }
