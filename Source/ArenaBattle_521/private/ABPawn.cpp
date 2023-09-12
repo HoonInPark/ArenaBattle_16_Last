@@ -10,6 +10,28 @@ AABPawn::AABPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CAPSULE"));
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
+	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+
+	RootComponent = Capsule;
+	Mesh->SetupAttachment(Capsule);
+	SpringArm->SetupAttachment(Capsule);
+	Camera->SetupAttachment(SpringArm);
+
+	Capsule->SetCapsuleHalfHeight(88.f);
+	Capsule->SetCapsuleRadius(34.f);
+	Mesh->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -88.f), FRotator(0.f, -90.f, 0.f));
+	SpringArm->TargetArmLength = 400.f;
+	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Game/InfinityBladeWarriors/Character/CompleteCharacters/SK_CharM_Cardboard.SK_CharM_Cardboard"));
+	if (SK_CARDBOARD.Succeeded())
+	{
+		Mesh->SetSkeletalMesh(SK_CARDBOARD.Object);
+	}
 }
 
 // Called when the game starts or when spawned
