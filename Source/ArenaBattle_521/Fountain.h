@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "EngineMinimal.h"
+#include "ArenaBattle_521.h"
 #include "GameFramework/Actor.h"
 #include "Fountain.generated.h"
 
@@ -18,6 +18,13 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	/*
+	* 만약 실수로 부모클래스에서 virtual을 쓰는 것을 잊고 그 함수를 자식 클래스에서 상속했을 때, 
+	* 자식 클래스에서 그 함수에 override를 써 주면 컴파일러는 부모 클래스의 그 함수가 자식에게 물려주는 함수라는 것을 알 수 있다.
+	* 여기서 중요한 것은, 원칙상 물려줄 함수면 부모 클래스에서 virtual을 써 주는 게 맞다는 것이다.
+	*/
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void PostInitializeComponents() override;
 
 public:	
 	// Called every frame

@@ -40,6 +40,17 @@ void AFountain::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//UE_LOG(ArenaBattle_521, Warning, TEXT("Actor Name : %s, ID : %d, Location X : %.3f"), *GetName(), ID, GetActorLocation().X);
+	ABLOG_S(Warning);
+	ABLOG(Warning, TEXT("Actor Name : %s, ID : %d, Location X : %.3f"), *GetName(), ID, GetActorLocation().X);
+}
+
+void AFountain::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+}
+
+void AFountain::PostInitializeComponents()
+{
 }
 
 // Called every frame
