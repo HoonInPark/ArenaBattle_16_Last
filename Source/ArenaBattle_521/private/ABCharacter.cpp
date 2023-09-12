@@ -46,7 +46,7 @@ void AABCharacter::SetControlMode(int32 _ControlMode)
 		SpringArm->bInheritRoll = true;
 		SpringArm->bInheritYaw = true;
 		SpringArm->bDoCollisionTest = true;
-		bUseControllerRotationYaw = true;
+		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
 	}
