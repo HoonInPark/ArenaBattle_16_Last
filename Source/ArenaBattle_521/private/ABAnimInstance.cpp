@@ -13,7 +13,6 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	const auto Pawn = TryGetPawnOwner();
-	ABLOG(Warning, TEXT("%s"), *Pawn->GetName());
 	if (::IsValid(Pawn))
 	{
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
