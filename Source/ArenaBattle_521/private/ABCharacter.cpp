@@ -41,9 +41,13 @@ void AABCharacter::PostInitializeComponents()
 	{
 		const UAnimInstance* pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
 		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
+		ABLOG(Warning, TEXT(" AnimInstance : %s"), *GetMesh()->GetAnimInstance()->GetName());
 	}
-	else
+	else // 이 Character에 할당된 AnimInstance가 있을 때~
+	{
 		const UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
+		ABLOG(Warning, TEXT(" AnimInstance : %s"), *pAnimInstance->GetName());
+	}
 }
 #pragma endregion ForUE5
 
