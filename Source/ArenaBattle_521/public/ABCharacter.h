@@ -7,7 +7,6 @@
 * 낭떠러지에서 떨어지는 것을 확인할 수 있다.
 */
 #include "ArenaBattle_521.h"
-#include "ABAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "ABCharacter.generated.h"
 
@@ -42,6 +41,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -52,7 +52,6 @@ public:
 	UCameraComponent* Camera;
 
 private:
-	virtual void PostInitializeComponents() override;
 
 	void UpDown(float _NewAxisValue);
 	void LeftRight(float _NewAxisValue);
@@ -61,4 +60,11 @@ private:
 
 	void ViewChange();
 	void Attack();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* _Montage, bool _bInterrupted);
+
+private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
 };

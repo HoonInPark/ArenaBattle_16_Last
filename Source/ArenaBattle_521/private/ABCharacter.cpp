@@ -2,6 +2,7 @@
 
 
 #include "ABCharacter.h"
+#include "ABAnimInstance.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -28,13 +29,15 @@ AABCharacter::AABCharacter()
 	SetControlMode(EControlMode::DIABLO);
 	ArmLengthSpeed = 3.f;
 	ArmRotationSpeed = 10.f;
+
+	IsAttacking = false;
 }
 
-#pragma region ForUE5
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+#pragma region ForUE5
 	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
 
 	if (!CurrentAnimInstance)
@@ -48,8 +51,13 @@ void AABCharacter::PostInitializeComponents()
 		const UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
 		ABLOG(Warning, TEXT(" AnimInstance Already Allocated : %s"), *pAnimInstance->GetName());
 	}
-}
 #pragma endregion ForUE5
+
+	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	ABCHECK(nullptr != AnimInstance);
+
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+}
 
 // Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
@@ -224,8 +232,19 @@ void AABCharacter::ViewChange()
 void AABCharacter::Attack()
 {
 	//ABLOG_S(Warning);
+	if (IsAttacking) return;
+
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
+	ABLOG(Warning, TEXT(" AnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
+
+	IsAttacking = true;
+}
+
+void AABCharacter::OnAttackMontageEnded(UAnimMontage* _Montage, bool _bInterrupted)
+{
+	ABCHECK(IsAttacking);
+	IsAttacking = false;
 }
