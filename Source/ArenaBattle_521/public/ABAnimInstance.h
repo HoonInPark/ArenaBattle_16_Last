@@ -18,9 +18,19 @@ public:
 	UABAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	void PlayAttackMontage();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
 	float CurrentPawnSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
 	bool IsInAir;
+
+	/*
+	 * VisibleDefaultsOnly와 VisibleInstanceOnly의 차이
+	 * 전자는 블프 편집 상에서만 볼 수 있다.
+	 * 후자는 이것이 레벨 상에 객체화됐을 때 에디터 상에서만 볼 수 있다.
+	 */
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=Attack, Meta=(AllowPrivateAccess=true))
+	UAnimMontage* AttackMontage;
 };

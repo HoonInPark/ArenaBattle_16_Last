@@ -8,3 +8,5 @@
 3. ->Relative가 아니라 Get/SetRelative~
 4. Animation Retargeting
  
+ 위 내용은 다음 유튜브 강의로 다룹니다.
+ https://youtu.be/uf8PAxifIlI

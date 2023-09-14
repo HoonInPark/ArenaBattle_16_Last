@@ -223,5 +223,9 @@ void AABCharacter::ViewChange()
 
 void AABCharacter::Attack()
 {
-	ABLOG_S(Warning);
+	//ABLOG_S(Warning);
+	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	if (nullptr == AnimInstance) return;
+
+	AnimInstance->PlayAttackMontage();
 }
