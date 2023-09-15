@@ -38,6 +38,8 @@ void AABCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 #pragma region ForUE5
+	/*
+	
 	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
 
 	if (!CurrentAnimInstance)
@@ -51,6 +53,7 @@ void AABCharacter::PostInitializeComponents()
 		const UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
 		ABLOG(Warning, TEXT(" AnimInstance Already Allocated : %s"), *pAnimInstance->GetName());
 	}
+	*/
 #pragma endregion ForUE5
 
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
@@ -63,7 +66,7 @@ void AABCharacter::PostInitializeComponents()
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void AABCharacter::SetControlMode(EControlMode _NewControlMode)
@@ -132,8 +135,8 @@ void AABCharacter::Tick(float DeltaTime)
 	{
 	case AABCharacter::EControlMode::DIABLO:
 		/*
-		* SizeSquared()는, DirectionToMove와 같은 벡터 데이터형식의 각 요소를 제곱하여 더한 다음 
-		* 그것의 제곱근을 구하는 것이다. 
+		* SizeSquared()는, DirectionToMove와 같은 벡터 데이터형식의 각 요소를 제곱하여 더한 다음
+		* 그것의 제곱근을 구하는 것이다.
 		* 간단히 말하면, 벡터의 크기를 구할 때 쓴다.
 		* FRotationMatrix::MakeFromX(DirectionToMove).Rotator()를 통해서는 WASD 값에서 Pawn의 회전 값을 도출해낸다.
 		*/
@@ -190,7 +193,7 @@ void AABCharacter::LeftRight(float _NewAxisValue)
 #pragma region PlayerControllerControlRotation
 /*
 * 다음 AddController~Input은 마우스입력 신호값을 PlayerController의 컨트롤 회전 값으로 변경하는 함수이다.
-* 실행 중 마우스를 탈출시켜 ABPlayerController를 선택해 보면, 이것의 Transform 값이 
+* 실행 중 마우스를 탈출시켜 ABPlayerController를 선택해 보면, 이것의 Transform 값이
 * displayall PlayerController ControlRotation으로 나오는 값과 일치하는 것을 확인할 수 있다.
 */
 void AABCharacter::LookUp(float _NewAxisValue)
@@ -232,9 +235,13 @@ void AABCharacter::ViewChange()
 void AABCharacter::Attack()
 {
 	//ABLOG_S(Warning);
+
+	// 만약 현재 공격이 실행중에 있다면 Attack() 함수의 나머지 바디를 실행하지 않고 스레드를 돌려보낸다.
 	if (IsAttacking) return;
 
+	// 이 클래스의 메시에 할당돼 있는 AnimInstance 객체를 가져온다.
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	// 할당된 AnimInstance가 없는 경우에도 돌려보낸다.
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
