@@ -37,25 +37,6 @@ void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-#pragma region ForUE5
-	/*
-	
-	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
-
-	if (!CurrentAnimInstance)
-	{
-		const UAnimInstance* pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
-		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
-		ABLOG(Warning, TEXT(" AnimInstance Allocate Succeeded : %s"), *GetMesh()->GetAnimInstance()->GetName());
-	}
-	else // 이 Character에 할당된 AnimInstance가 있을 때~
-	{
-		const UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
-		ABLOG(Warning, TEXT(" AnimInstance Already Allocated : %s"), *pAnimInstance->GetName());
-	}
-	*/
-#pragma endregion ForUE5
-
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	ABCHECK(nullptr != AnimInstance);
 
