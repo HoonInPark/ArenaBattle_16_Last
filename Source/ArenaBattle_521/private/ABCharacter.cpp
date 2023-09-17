@@ -23,36 +23,46 @@ AABCharacter::AABCharacter()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(
 		TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
-	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
-	}
 
 	SetControlMode(EControlMode::DIABLO);
 	ArmLengthSpeed = 3.f;
 	ArmRotationSpeed = 10.f;
 
 	IsAttacking = false;
+
+#pragma region Textbook
+	/*
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> WARRIOR_ANIM(TEXT("/Game/Book/Animations/ABP_Warrior.ABP_Warrior"));
+	if (WARRIOR_ANIM.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(WARRIOR_ANIM.Class);
+	}
+	*/
+#pragma endregion Textbook
 }
 
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
+	pAnimInstance = GetMesh()->GetAnimInstance();
 
-	if (!CurrentAnimInstance)
+#pragma region ForUE5
+	if (!pAnimInstance)
 	{
-		UAnimInstance* pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
+		pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
 		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
 		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-		ABLOG(Warning, TEXT(" AnimInstance Allocate Succeeded : %s"), *GetMesh()->GetAnimInstance()->GetName());
 	}
 	else
 	{
-		UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
+		pAnimInstance = Cast<UABAnimInstance>(pAnimInstance);
 		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-		ABLOG(Warning, TEXT(" AnimInstance Already Allocated : %s"), *pAnimInstance->GetName());
 	}
+#pragma endregion ForUE5
 }
 
 // Called when the game starts or when spawned
@@ -247,4 +257,12 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* _Montage, bool _bInterrupt
 {
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
+}
+
+void AABCharacter::SendMovement_Implementation(FPawnMovement _PawnMovement)
+{
+}
+
+void AABCharacter::SendEvent_Implementation(EEventType _EventType)
+{
 }

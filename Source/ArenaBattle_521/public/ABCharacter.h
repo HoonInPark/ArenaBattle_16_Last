@@ -67,4 +67,10 @@ private:
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;
+	UPROPERTY()
+	UAnimInstance* pAnimInstance;
+
+private:
+	virtual void SendMovement_Implementation(FPawnMovement _PawnMovement) override;
+	virtual void SendEvent_Implementation(EEventType _EventType) override;
 };

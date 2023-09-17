@@ -29,3 +29,17 @@ void UABAnimInstance::PlayAttackMontage()
 	if (!Montage_IsPlaying(AttackMontage))
 		Montage_Play(AttackMontage, 1.f);
 }
+
+void UABAnimInstance::SendMovement_Implementation(FPawnMovement _PawnMovement)
+{
+	PawnMovement_AnimInst = _PawnMovement;
+}
+
+void UABAnimInstance::SendEvent_Implementation(EEventType _EventType)
+{
+	switch (_EventType)
+	{
+	case EEventType::ATTACK:
+		break;
+	}
+}

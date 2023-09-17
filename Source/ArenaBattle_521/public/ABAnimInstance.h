@@ -34,4 +34,9 @@ private:
 	 */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=Attack, Meta=(AllowPrivateAccess=true))
 	UAnimMontage* AttackMontage;
+
+private:
+	FPawnMovement PawnMovement_AnimInst;
+	virtual void SendMovement_Implementation(FPawnMovement _PawnMovement) override;
+	virtual void SendEvent_Implementation(EEventType _EventType) override;
 };
