@@ -7,11 +7,12 @@
 * 낭떠러지에서 떨어지는 것을 확인할 수 있다.
 */
 #include "ArenaBattle_521.h"
+#include "AB_Character_To_AnimInst.h"
 #include "GameFramework/Character.h"
 #include "ABCharacter.generated.h"
 
 UCLASS()
-class ARENABATTLE_521_API AABCharacter : public ACharacter
+class ARENABATTLE_521_API AABCharacter : public ACharacter, public IAB_Character_To_AnimInst
 {
 	GENERATED_BODY()
 
@@ -52,7 +53,6 @@ public:
 	UCameraComponent* Camera;
 
 private:
-
 	void UpDown(float _NewAxisValue);
 	void LeftRight(float _NewAxisValue);
 	void LookUp(float _NewAxisValue);

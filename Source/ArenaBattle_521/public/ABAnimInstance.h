@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ArenaBattle_521.h"
+#include "AB_Character_To_AnimInst.h"
 #include "Animation/AnimInstance.h"
 #include "ABAnimInstance.generated.h"
 
@@ -10,7 +11,7 @@
  * 
  */
 UCLASS()
-class ARENABATTLE_521_API UABAnimInstance : public UAnimInstance
+class ARENABATTLE_521_API UABAnimInstance : public UAnimInstance, public IAB_Character_To_AnimInst
 {
 	GENERATED_BODY()
 

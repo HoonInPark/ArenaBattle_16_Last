@@ -38,7 +38,7 @@ void AABCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABCHECK(nullptr != AnimInstance);
+	ABLOG(Warning, TEXT(" AnimInstance : %s"), *AnimInstance->GetName());
 
 	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 }
@@ -220,13 +220,13 @@ void AABCharacter::Attack()
 	// 만약 현재 공격이 실행중에 있다면 Attack() 함수의 나머지 바디를 실행하지 않고 스레드를 돌려보낸다.
 	if (IsAttacking) return;
 
-	// 이 클래스의 메시에 할당돼 있는 AnimInstance 객체를 가져온다.
+	// 이 클래스의 메시에 할당돼 있는 pAnimInstance 객체를 가져온다.
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	// 할당된 AnimInstance가 없는 경우에도 돌려보낸다.
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
-	ABLOG(Warning, TEXT(" AnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
+	ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
 
 	IsAttacking = true;
 }
