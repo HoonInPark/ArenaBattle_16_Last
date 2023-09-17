@@ -20,7 +20,8 @@ AABCharacter::AABCharacter()
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(
+		TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
@@ -36,18 +37,28 @@ AABCharacter::AABCharacter()
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
+	UAnimInstance* CurrentAnimInstance = GetMesh()->GetAnimInstance();
 
-	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABLOG(Warning, TEXT(" AnimInstance : %s"), *AnimInstance->GetName());
-
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+	if (!CurrentAnimInstance)
+	{
+		UAnimInstance* pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
+		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
+		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+		ABLOG(Warning, TEXT(" AnimInstance Allocate Succeeded : %s"), *GetMesh()->GetAnimInstance()->GetName());
+	}
+	else
+	{
+		UAnimInstance* pAnimInstance = Cast<UABAnimInstance>(CurrentAnimInstance);
+		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+		ABLOG(Warning, TEXT(" AnimInstance Already Allocated : %s"), *pAnimInstance->GetName());
+	}
 }
 
 // Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AABCharacter::SetControlMode(EControlMode _NewControlMode)
@@ -66,15 +77,15 @@ void AABCharacter::SetControlMode(EControlMode _NewControlMode)
 		SpringArm->bInheritYaw = true;
 		SpringArm->bDoCollisionTest = true; // 카메라가 다른 물체와 충돌되는지 여부를 결정.
 
-		/*
-		 * bUseControllerRotationYaw 옵션에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
-		 * Pawn 자체도 회전하는지 여부이다. 지구의 공전, 자전을 생각하면 개념을 이해하기 쉬울 것이다.
-		 * 여기 GTA 케이스 같은 경우는 카메라가 공전을 하지만 Character는 자전하지 않는다.
-		 * 이는 bUseControllerRotationYaw의 값을 변경해 보면서 그 이유를 확인해 볼 수 있다.
-		 * 마우스 입력 값을 폰의 정면방향을 돌리는 행위와 일치시킬지 여부를 결정하는 것이 이 변수값이다.
-		 */
+	/*
+	 * bUseControllerRotationYaw 옵션에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
+	 * Pawn 자체도 회전하는지 여부이다. 지구의 공전, 자전을 생각하면 개념을 이해하기 쉬울 것이다.
+	 * 여기 GTA 케이스 같은 경우는 카메라가 공전을 하지만 Character는 자전하지 않는다.
+	 * 이는 bUseControllerRotationYaw의 값을 변경해 보면서 그 이유를 확인해 볼 수 있다.
+	 * 마우스 입력 값을 폰의 정면방향을 돌리는 행위와 일치시킬지 여부를 결정하는 것이 이 변수값이다.
+	 */
 		bUseControllerRotationYaw = false;
-		// bUseControllerRotationYaw와 달리 여기선 WASD를 누름에 따라 Pawn의 정면방향을 회전할 것인지.
+	// bUseControllerRotationYaw와 달리 여기선 WASD를 누름에 따라 Pawn의 정면방향을 회전할 것인지.
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
@@ -108,7 +119,8 @@ void AABCharacter::Tick(float DeltaTime)
 	{
 	case AABCharacter::EControlMode::DIABLO:
 		// 책에서는 SpringArm->RelativeRotation라는 멤버에 접근하지만, 현 UE5 기준 이런건 없다...
-		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
+		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime,
+		                                                ArmRotationSpeed));
 		break;
 	}
 
