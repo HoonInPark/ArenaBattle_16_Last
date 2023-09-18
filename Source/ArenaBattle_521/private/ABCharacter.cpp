@@ -42,27 +42,22 @@ AABCharacter::AABCharacter()
 	}
 	*/
 #pragma endregion Textbook
-	
-	pAnimInstance = Cast<UABAnimInstance>(pAnimInstance); // 먼저 캐스팅해서 초기화해준다.
 }
 
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	
+	pAnimInstance = GetMesh()->GetAnimInstance(); // 먼저 캐스팅해서 초기화해준다.
+	
 #pragma region ForUE5
 	if (!pAnimInstance)
 	{
 		pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
 		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
-		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-		ABLOG_S(Warning);
 	}
-	else
-	{
-		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
-		ABLOG_S(Warning);
-	}
+
+	pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 #pragma endregion ForUE5
 
 }
