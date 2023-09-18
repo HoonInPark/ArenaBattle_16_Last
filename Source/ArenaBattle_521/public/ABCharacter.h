@@ -57,7 +57,6 @@ private:
 	void LeftRight(float _NewAxisValue);
 	void LookUp(float _NewAxisValue);
 	void Turn(float _NewAxisValue);
-
 	void ViewChange();
 	void Attack();
 
@@ -68,9 +67,10 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsAttacking;
 	UPROPERTY()
-	UAnimInstance* pAnimInstance;
+		UAnimInstance* pAnimInstance;
 
 private:
 	virtual void SendMovement_Implementation(FPawnMovement _PawnMovement) override;
 	virtual void SendEvent_Implementation(EEventType _EventType) override;
 };
+

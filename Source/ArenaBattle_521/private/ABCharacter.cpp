@@ -42,13 +42,13 @@ AABCharacter::AABCharacter()
 	}
 	*/
 #pragma endregion Textbook
+	
+	pAnimInstance = Cast<UABAnimInstance>(pAnimInstance); // 먼저 캐스팅해서 초기화해준다.
 }
 
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
-	pAnimInstance = GetMesh()->GetAnimInstance();
 
 #pragma region ForUE5
 	if (!pAnimInstance)
@@ -56,13 +56,15 @@ void AABCharacter::PostInitializeComponents()
 		pAnimInstance = NewObject<UABAnimInstance>(GetMesh(), UABAnimInstance::StaticClass());
 		GetMesh()->SetAnimInstanceClass(pAnimInstance->GetClass());
 		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+		ABLOG_S(Warning);
 	}
 	else
 	{
-		pAnimInstance = Cast<UABAnimInstance>(pAnimInstance);
 		pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+		ABLOG_S(Warning);
 	}
 #pragma endregion ForUE5
+
 }
 
 // Called when the game starts or when spawned
@@ -237,19 +239,22 @@ void AABCharacter::ViewChange()
 
 void AABCharacter::Attack()
 {
-	//ABLOG_S(Warning);
-
-	// 만약 현재 공격이 실행중에 있다면 Attack() 함수의 나머지 바디를 실행하지 않고 스레드를 돌려보낸다.
 	if (IsAttacking) return;
-
-	// 이 클래스의 메시에 할당돼 있는 pAnimInstance 객체를 가져온다.
+	
+#pragma region Textbook
+	/*
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	// 할당된 AnimInstance가 없는 경우에도 돌려보낸다.
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlayAttackMontage();
-	ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
+	ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %hhd"), AnimInstance->IsAnyMontagePlaying());
 
+	IsAttacking = true;
+	*/
+#pragma endregion Textbook
+
+	if (nullptr == pAnimInstance) return;
+	UABAnimInstance::Execute_SendEvent(pAnimInstance, EEventType::ATTACK);
 	IsAttacking = true;
 }
 
