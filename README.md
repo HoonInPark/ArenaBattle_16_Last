@@ -4,7 +4,7 @@
 
 교과서는 Ureal 4를 기준으로 만들어졌지만, 이를 Unreal 5로 작성하게 되면 다음 포인트에서 그 구현 방식이 크게 차이납니다.
 1. 키매핑을 해주는 방식. 
-2. Anim Bluepirnt를 C++ Pawn 클래스와 연결하는 방식 - TryGetPawnOwner()를 사용하는 방식과 UInterface를 이용하는 방식 두가지가 있습니다.
+2. Anim Bluepirnt를 C++ Pawn 클래스와 연결하는 방식 - TryGetPawnOwner()를 사용하는 방식, Cast<ABAnimInstance>(GetMesh()->GetAnimInstance())를 사용하는 방식과 UInterface를 이용하는 방식 두가지가 있습니다.
 3. ->Relative가 아니라 Get/SetRelative~
 4. Animation Retargeting
  
