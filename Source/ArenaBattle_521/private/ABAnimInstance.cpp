@@ -29,7 +29,7 @@ void UABAnimInstance::SendMovement_Implementation(FPawnMovement _PawnMovement)
 {
 	CurrentPawnSpeed = _PawnMovement._Velocity;
 	bIsInAir = _PawnMovement._bIsInAir;
-	ABLOG(Warning, TEXT(" _PawnMovement : %f, %hhd"), _PawnMovement._Velocity, _PawnMovement._bIsInAir);
+	ABLOG(Warning, TEXT(" _PawnMovement : Velocity == %f, bIsInAir == %hhd"), _PawnMovement._Velocity, _PawnMovement._bIsInAir);
 }
 
 void UABAnimInstance::SendEvent_Implementation(EEventType _EventType)
