@@ -47,9 +47,9 @@ AABCharacter::AABCharacter()
 void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
+
 	pAnimInstance = GetMesh()->GetAnimInstance(); // 먼저 캐스팅해서 초기화해준다.
-	
+
 #pragma region ForUE5
 	if (!pAnimInstance)
 	{
@@ -59,7 +59,6 @@ void AABCharacter::PostInitializeComponents()
 
 	pAnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 #pragma endregion ForUE5
-
 }
 
 // Called when the game starts or when spawned
@@ -147,6 +146,10 @@ void AABCharacter::Tick(float DeltaTime)
 		}
 		break;
 	}
+
+	UABAnimInstance::Execute_SendMovement(pAnimInstance, {
+		                                      this->GetVelocity().Size(), GetMovementComponent()->IsFalling()
+	                                      });
 }
 
 // Called to bind functionality to input
@@ -235,7 +238,7 @@ void AABCharacter::ViewChange()
 void AABCharacter::Attack()
 {
 	if (IsAttacking) return;
-	
+
 #pragma region Textbook
 	/*
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());

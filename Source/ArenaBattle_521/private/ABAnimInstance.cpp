@@ -6,7 +6,7 @@ UABAnimInstance::UABAnimInstance(): PawnMovement_AnimInst() // 이렇게 하면 FPawn
 {
 	// ABLOG(Warning, TEXT(" PawnMovement_AnimInst : %f, %hhd"), PawnMovement_AnimInst._Velocity, PawnMovement_AnimInst._IsFalling);
 	CurrentPawnSpeed = 0.f;
-	IsInAir = false;
+	bIsInAir = false;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(
 		TEXT("/Game/Book/Animations/SK_Mannequin_Skeleton_Montage.SK_Mannequin_Skeleton_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -17,13 +17,6 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	const auto Pawn = TryGetPawnOwner();
-	if (::IsValid(Pawn))
-	{
-		CurrentPawnSpeed = Pawn->GetVelocity().Size();
-		if (const auto Character = Cast<ACharacter>(Pawn))
-			IsInAir = Character->GetMovementComponent()->IsFalling();
-	}
 }
 
 void UABAnimInstance::PlayAttackMontage()
@@ -34,7 +27,9 @@ void UABAnimInstance::PlayAttackMontage()
 
 void UABAnimInstance::SendMovement_Implementation(FPawnMovement _PawnMovement)
 {
-	PawnMovement_AnimInst = _PawnMovement;
+	CurrentPawnSpeed = _PawnMovement._Velocity;
+	bIsInAir = _PawnMovement._bIsInAir;
+	ABLOG(Warning, TEXT(" _PawnMovement : %f, %hhd"), _PawnMovement._Velocity, _PawnMovement._bIsInAir);
 }
 
 void UABAnimInstance::SendEvent_Implementation(EEventType _EventType)

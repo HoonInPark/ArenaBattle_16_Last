@@ -12,8 +12,9 @@ struct FPawnMovement
 	GENERATED_BODY()
 
 	UPROPERTY()
-	float _Velocity;
-
+	double _Velocity;
+	UPROPERTY()
+	bool _bIsInAir;
 };
 
 UENUM(BlueprintType)

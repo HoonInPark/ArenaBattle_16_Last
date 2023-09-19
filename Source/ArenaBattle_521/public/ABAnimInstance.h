@@ -25,7 +25,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
 	float CurrentPawnSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
-	bool IsInAir;
+	bool bIsInAir;
 
 	/*
 	 * VisibleDefaultsOnly와 VisibleInstanceOnly의 차이
