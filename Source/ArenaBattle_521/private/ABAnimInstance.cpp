@@ -27,6 +27,13 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UABAnimInstance::PlayAttackMontage()
 {
-	if (!Montage_IsPlaying(AttackMontage))
-		Montage_Play(AttackMontage, 1.f);
+	// if (!Montage_IsPlaying(AttackMontage))
+	// 	Montage_Play(AttackMontage, 1.f);
+
+	Montage_Play(AttackMontage, 1.f);
+}
+
+void UABAnimInstance::AnimNotify_AttackHitCheck()
+{
+	ABLOG_S(Warning);
 }

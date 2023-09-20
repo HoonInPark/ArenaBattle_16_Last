@@ -37,10 +37,9 @@ void AABCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
-	ABLOG(Warning, TEXT(" AnimInstance : %s"), *AnimInstance->GetName());
-
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
+	ABAnim = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
+	ABCHECK(nullptr != ABAnim);
+	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 }
 
 // Called when the game starts or when spawned
@@ -225,8 +224,8 @@ void AABCharacter::Attack()
 	// 할당된 AnimInstance가 없는 경우에도 돌려보낸다.
 	if (nullptr == AnimInstance) return;
 
-	AnimInstance->PlayAttackMontage();
-	ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
+	ABAnim->PlayAttackMontage();
+	// ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
 
 	IsAttacking = true;
 }
