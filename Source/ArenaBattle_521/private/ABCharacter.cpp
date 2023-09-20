@@ -31,6 +31,8 @@ AABCharacter::AABCharacter()
 	ArmRotationSpeed = 10.f;
 
 	IsAttacking = false;
+	MaxCombo = 4;
+	AttackEndComboState();
 }
 
 void AABCharacter::PostInitializeComponents()
@@ -234,4 +236,19 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* _Montage, bool _bInterrupt
 {
 	ABCHECK(IsAttacking);
 	IsAttacking = false;
+}
+
+void AABCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+	ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
+}
+
+void AABCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = false;
+	CurrentCombo = 0;
 }
