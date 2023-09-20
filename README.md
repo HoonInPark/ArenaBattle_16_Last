@@ -7,6 +7,8 @@
 2. Anim Bluepirnt를 C++ Pawn 클래스와 연결하는 방식 - TryGetPawnOwner()를 사용하는 방식과 UInterface를 이용하는 방식 두가지가 있습니다.
 3. ->Relative가 아니라 Get/SetRelative~
 4. Animation Retargeting
+5. Animation Montage Section을 조작하는 방법에 있어서 Editor UI의 변화.
  
  위 내용은 다음 유튜브 강의로 다룹니다.
- https://youtu.be/uf8PAxifIlI
+ 이득우_1 : https://youtu.be/uf8PAxifIlI
+ 이득우_2 : 
