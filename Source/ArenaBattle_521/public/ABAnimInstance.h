@@ -22,7 +22,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
-	void JumpToAttackMontageSection(int32 NewSection);
+	void JumpToAttackMontageSection(int32 _NewSection);
 
 public:
 	FOnNextAttackCheckDelegate OnNextAttackCheck; 
@@ -34,7 +34,7 @@ private:
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
 
-	FName GetAttackMontageSectionName(int32 Section); 
+	FName GetAttackMontageSectionName(int32 _Section); 
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
