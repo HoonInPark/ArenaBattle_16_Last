@@ -7,7 +7,8 @@ UABAnimInstance::UABAnimInstance()
 {
 	CurrentPawnSpeed = 0.f;
 	IsInAir = false;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/Book/Animations/SK_Mannequin_Skeleton_Montage.SK_Mannequin_Skeleton_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(
+		TEXT("/Game/Book/Animations/SK_Mannequin_Skeleton_Montage.SK_Mannequin_Skeleton_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
 		AttackMontage = ATTACK_MONTAGE.Object;
 }
@@ -33,8 +34,10 @@ void UABAnimInstance::PlayAttackMontage()
 	Montage_Play(AttackMontage, 1.f);
 }
 
+// ABCharacter에서 호출되는 함수이다.
 void UABAnimInstance::JumpToAttackMontageSection(int32 _NewSection)
 {
+	// Montage_IsPlaying()는 델리게이트는 아니고 그때마다 Montage가 실행되고 있는지 확인하는 함수이다.
 	ABCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(_NewSection), AttackMontage);
 }

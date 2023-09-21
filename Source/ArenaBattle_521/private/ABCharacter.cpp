@@ -20,7 +20,8 @@ AABCharacter::AABCharacter()
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(
+		TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
@@ -43,24 +44,45 @@ void AABCharacter::PostInitializeComponents()
 	ABCHECK(nullptr != ABAnim);
 	ABAnim->OnMontageEnded.AddDynamic(this, &AABCharacter::OnAttackMontageEnded);
 
-	ABAnim->OnNextAttackCheck.AddLambda([this]() -> void
-	{
-		ABLOG(Warning, TEXT("OnNextAttackCheck"))
-		CanNextCombo = false;
-
-		if (IsComboInputOn)
+	/*
+	* ABCharacter와 AnimInstance의 델리게이트 아키텍처 이해하기
+	* 
+	* DECLARE_MULTICAST_DELEGATE() 키워드를 통해 인수로 델리게이트를 등록.
+	* 여기서는 FOnNextAttackCheckDelegate를 등록함.
+	* 그리고 헤더에서 다음과 같이 변수 선언.
+	* FOnNextAttackCheckDelegate OnNextAttackCheck;
+	* 이 OnNextAttackCheck 변수의 멤버함수를 다음과 같이 호출하면 다른 클래스의 함수들, 즉 멀티캐스트 델리게이트로 등록된 함수들이 모두 호출되는 것임.
+	* OnNextAttackCheck.BroadCast();
+	* 
+	* 여기서 호출 주체는 ABAnimInstance이고, 호출되는 함수들은 ABCharacter에 있다.
+	* ABAnimInstance에서 DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate) 명령어로 델리게이트 통로를 파 뒀다.
+	* 이 호출을 발동시키는 명령어는 OnNextAttackCheck.BroadCast()인데, 이는 애님 노티파이 시점에 호출되는 AnimNotify_AttackHitCheck() 함수 내에 있다.
+	* 
+	* 그럼 구체적으로 이 델리게이트를 통해 호출되는 함수로는 무엇들이 등록돼 있는가?
+	* 여기선 아래의 람다식을 등록함. 
+	* 원하면 다른 이름 있는 함수나 또 다른 람다식을 등록하여 멀티캐스트 명령을 받을 수 있음.
+	*/
+	ABAnim->OnNextAttackCheck.AddLambda(
+		// Lambda expression begins
+		[this]() -> void
 		{
-			AttackStartComboState();
-			ABAnim->JumpToAttackMontageSection(CurrentCombo);
+			ABLOG(Warning, TEXT("OnNextAttackCheck"));
+			CanNextCombo = false;
+
+			if (IsComboInputOn)
+			{
+				AttackStartComboState();
+				ABAnim->JumpToAttackMontageSection(CurrentCombo);
+			}
 		}
-	});
+		// Lambda expression ends
+	);
 }
 
 // Called when the game starts or when spawned
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AABCharacter::SetControlMode(EControlMode _NewControlMode)
@@ -79,15 +101,15 @@ void AABCharacter::SetControlMode(EControlMode _NewControlMode)
 		SpringArm->bInheritYaw = true;
 		SpringArm->bDoCollisionTest = true; // 카메라가 다른 물체와 충돌되는지 여부를 결정.
 
-		/*
-		 * bUseControllerRotationYaw 옵션에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
-		 * Pawn 자체도 회전하는지 여부이다. 지구의 공전, 자전을 생각하면 개념을 이해하기 쉬울 것이다.
-		 * 여기 GTA 케이스 같은 경우는 카메라가 공전을 하지만 Character는 자전하지 않는다.
-		 * 이는 bUseControllerRotationYaw의 값을 변경해 보면서 그 이유를 확인해 볼 수 있다.
-		 * 마우스 입력 값을 폰의 정면방향을 돌리는 행위와 일치시킬지 여부를 결정하는 것이 이 변수값이다.
-		 */
+	/*
+	 * bUseControllerRotationYaw 옵션에서 관건은, Pawn을 중심으로 SpringArm이 회전할 때
+	 * Pawn 자체도 회전하는지 여부이다. 지구의 공전, 자전을 생각하면 개념을 이해하기 쉬울 것이다.
+	 * 여기 GTA 케이스 같은 경우는 카메라가 공전을 하지만 Character는 자전하지 않는다.
+	 * 이는 bUseControllerRotationYaw의 값을 변경해 보면서 그 이유를 확인해 볼 수 있다.
+	 * 마우스 입력 값을 폰의 정면방향을 돌리는 행위와 일치시킬지 여부를 결정하는 것이 이 변수값이다.
+	 */
 		bUseControllerRotationYaw = false;
-		// bUseControllerRotationYaw와 달리 여기선 WASD를 누름에 따라 Pawn의 정면방향을 회전할 것인지.
+	// bUseControllerRotationYaw와 달리 여기선 WASD를 누름에 따라 Pawn의 정면방향을 회전할 것인지.
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.f, 720.f, 0.f);
@@ -121,7 +143,8 @@ void AABCharacter::Tick(float DeltaTime)
 	{
 	case AABCharacter::EControlMode::DIABLO:
 		// 책에서는 SpringArm->RelativeRotation라는 멤버에 접근하지만, 현 UE5 기준 이런건 없다...
-		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
+		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime,
+		                                                ArmRotationSpeed));
 		break;
 	}
 
@@ -234,12 +257,15 @@ void AABCharacter::Attack()
 	// 만약 현재 공격이 실행중에 있다면 Attack() 함수의 나머지 바디를 실행하지 않고 스레드를 돌려보낸다.
 	if (IsAttacking) return;
 
+#pragma region 256
 	// 이 클래스의 메시에 할당돼 있는 pAnimInstance 객체를 가져온다.
 	const auto AnimInstance = Cast<UABAnimInstance>(GetMesh()->GetAnimInstance());
 	// 할당된 AnimInstance가 없는 경우에도 돌려보낸다.
 	if (nullptr == AnimInstance) return;
 
 	ABAnim->PlayAttackMontage();
+#pragma endregion 256
+	
 	// ABLOG(Warning, TEXT(" pAnimInstance->PlayAttackMontage() : %b"), AnimInstance->IsAnyMontagePlaying());
 
 	IsAttacking = true;
