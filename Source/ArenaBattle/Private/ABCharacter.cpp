@@ -566,7 +566,7 @@ void AABCharacter::PostInitializeComponents()
 		ABCHECK(ABAnim);
 
 		// 일단 콤보다 들어오지 않았다면 원래 false인데 다시 그냥 false로 설정
-		// 콤보다 들어왔다면 다음 콤보를 다시 받도록 다시 false로 설정
+		// 콤보가 들어왔다면 다음 콤보를 다시 받도록 다시 false로 설정
 		CanNextCombo = false;
 
 		// NextAttackCheck이벤트가 호출되기 전에 이미 Attak연속 공격이 이루어졌다면
