@@ -141,7 +141,7 @@ void AABCharacter::Tick(float DeltaTime)
 
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::DIABLO:
+	case EControlMode::DIABLO:
 		// 책에서는 SpringArm->RelativeRotation라는 멤버에 접근하지만, 현 UE5 기준 이런건 없다...
 		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime,
 		                                                ArmRotationSpeed));
@@ -150,17 +150,17 @@ void AABCharacter::Tick(float DeltaTime)
 
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::DIABLO:
+	case EControlMode::DIABLO:
 		/*
 		* SizeSquared()는, DirectionToMove와 같은 벡터 데이터형식의 각 요소를 제곱하여 더한 다음
 		* 그것의 제곱근을 구하는 것이다.
 		* 간단히 말하면, 벡터의 크기를 구할 때 쓴다.
 		* FRotationMatrix::MakeFromX(DirectionToMove).Rotator()를 통해서는 WASD 값에서 Pawn의 회전 값을 도출해낸다.
 		*/
-		if (DirectionToMove.SizeSquared() > 0.f)
+		if (DirectionToMove.SizeSquared() > 0.f) // 움직임이 발생하는 경우 바디로 진입
 		{
-			GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator());
-			AddMovementInput(DirectionToMove);
+			GetController()->SetControlRotation(FRotationMatrix::MakeFromX(DirectionToMove).Rotator()); // WASD가 가리키는 방향으로 몸을 튼다.
+			AddMovementInput(DirectionToMove); // WASD가 가리키는 방향으로 움직인다.
 		}
 		break;
 	}
@@ -185,10 +185,10 @@ void AABCharacter::UpDown(float _NewAxisValue)
 {
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::GTA:
-		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _NewAxisValue);
+	case EControlMode::GTA:
+            AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), _NewAxisValue);
 		break;
-	case AABCharacter::EControlMode::DIABLO:
+	case EControlMode::DIABLO:
 		DirectionToMove.X = _NewAxisValue;
 		break;
 	}
@@ -198,10 +198,10 @@ void AABCharacter::LeftRight(float _NewAxisValue)
 {
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::GTA:
+	case EControlMode::GTA:
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), _NewAxisValue);
 		break;
-	case AABCharacter::EControlMode::DIABLO:
+	case EControlMode::DIABLO:
 		DirectionToMove.Y = _NewAxisValue;
 		break;
 	}
@@ -217,7 +217,7 @@ void AABCharacter::LookUp(float _NewAxisValue)
 {
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::GTA:
+	case EControlMode::GTA:
 		AddControllerPitchInput(_NewAxisValue);
 		break;
 	}
@@ -227,7 +227,7 @@ void AABCharacter::Turn(float _NewAxisValue)
 {
 	switch (CurrentControlMode)
 	{
-	case AABCharacter::EControlMode::GTA:
+	case EControlMode::GTA:
 		AddControllerYawInput(_NewAxisValue);
 		break;
 	}
