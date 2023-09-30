@@ -23,9 +23,7 @@ AABCharacter::AABCharacter()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_CARDBOARD(
 		TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
-	{
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
-	}
 
 	SetControlMode(EControlMode::DIABLO);
 	ArmLengthSpeed = 3.f;
@@ -61,6 +59,9 @@ void AABCharacter::PostInitializeComponents()
 	* 그럼 구체적으로 이 델리게이트를 통해 호출되는 함수로는 무엇들이 등록돼 있는가?
 	* 여기선 아래의 람다식을 등록함. 
 	* 원하면 다른 이름 있는 함수나 또 다른 람다식을 등록하여 멀티캐스트 명령을 받을 수 있음.
+	* 
+	* ABAnim 쪽에서 몽타주의 한 섹션이 끝남과 동시에 OnNextAttackCheck 델리게이트 인스턴스가 BroadCast()로 호출되어
+	* 여기에 AddLambda를 통해 바인딩이 돼 있던 람다식이 선언되고 호출된다.
 	*/
 	ABAnim->OnNextAttackCheck.AddLambda(
 		// Lambda expression begins
@@ -72,7 +73,7 @@ void AABCharacter::PostInitializeComponents()
 			if (IsComboInputOn)
 			{
 				AttackStartComboState();
-				ABAnim->JumpToAttackMontageSection(CurrentCombo);
+				ABAnim->JumpToAttackMontageSection(CurrentCombo); 
 			}
 		}
 		// Lambda expression ends
@@ -143,8 +144,7 @@ void AABCharacter::Tick(float DeltaTime)
 	{
 	case EControlMode::DIABLO:
 		// 책에서는 SpringArm->RelativeRotation라는 멤버에 접근하지만, 현 UE5 기준 이런건 없다...
-		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime,
-		                                                ArmRotationSpeed));
+		SpringArm->SetRelativeRotation(FMath::RInterpTo(SpringArm->GetRelativeRotation(), ArmRotationTo, DeltaTime, ArmRotationSpeed));
 		break;
 	}
 
@@ -249,7 +249,7 @@ void AABCharacter::ViewChange()
 	}
 }
 
-void AABCharacter::Attack()
+void AABCharacter::Attack() // 마우스 왼쪽 버튼에 바인딩 돼 있음.
 {
 	/*
 	//ABLOG_S(Warning);
@@ -273,11 +273,13 @@ void AABCharacter::Attack()
 
 	if (IsAttacking)
 	{
+		// IsWithinInclusive 키워드는 <>타입의 변수를 넣어서 첫번째 변수가 뒤의 두 입력 값 사이에 들어 있는지 확인하는 함수이다.
 		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+
 		if (CanNextCombo)
 			IsComboInputOn = true;
 	}
-	else
+	else // 마우스 왼쪽 버튼이 눌린 것이 연타의 처음을 시작하는 공격이라면~
 	{
 		ABCHECK(CurrentCombo == 0);
 		AttackStartComboState();
@@ -295,11 +297,14 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage* _Montage, bool _bInterrupt
 	AttackEndComboState();
 }
 
+#pragma region SetComboState
 void AABCharacter::AttackStartComboState()
 {
 	CanNextCombo = true;
 	IsComboInputOn = false;
+
 	ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0, MaxCombo - 1));
+
 	CurrentCombo = FMath::Clamp<int32>(CurrentCombo + 1, 1, MaxCombo);
 }
 
@@ -309,3 +314,4 @@ void AABCharacter::AttackEndComboState()
 	CanNextCombo = false;
 	CurrentCombo = 0;
 }
+#pragma endregion SetComboState

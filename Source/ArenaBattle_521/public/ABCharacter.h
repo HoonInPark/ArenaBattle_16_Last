@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "ABCharacter.generated.h"
 
+
 UCLASS()
 class ARENABATTLE_521_API AABCharacter : public ACharacter
 {
@@ -58,6 +59,7 @@ private:
 	void Turn(float _NewAxisValue);
 
 	void ViewChange();
+
 	void Attack();
 
 	UFUNCTION()

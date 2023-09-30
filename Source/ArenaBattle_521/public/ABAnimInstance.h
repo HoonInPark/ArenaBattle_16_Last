@@ -34,7 +34,7 @@ private:
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
 
-	FName GetAttackMontageSectionName(int32 _Section); 
+	FName GetAttackMontageSectionName(int32 _Section);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Pawn, Meta=(AllowPrivateAccess=true))
