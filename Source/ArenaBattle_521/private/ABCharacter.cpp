@@ -24,6 +24,8 @@ AABCharacter::AABCharacter()
 		TEXT("/Game/Book/SkeletalMesh/SK_CharM_Cardboard.SK_CharM_Cardboard"));
 	if (SK_CARDBOARD.Succeeded())
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCharacter")); // 왜 Character의 Collision 이름이 Custom으로 뜰까?
+	ABLOG(Warning, TEXT(" CollisionProfileName : %s"), *GetCapsuleComponent()->GetCollisionProfileName().ToString());
 
 	SetControlMode(EControlMode::DIABLO);
 	ArmLengthSpeed = 3.f;
@@ -32,6 +34,7 @@ AABCharacter::AABCharacter()
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
 }
 
 void AABCharacter::PostInitializeComponents()
