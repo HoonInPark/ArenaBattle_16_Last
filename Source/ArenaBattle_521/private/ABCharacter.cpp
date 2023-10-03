@@ -4,6 +4,7 @@
 #include "ABCharacter.h"
 #include "ABAnimInstance.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -366,14 +367,14 @@ void AABCharacter::AttackCheck()
 	);
 #endif
 
-	if (bResult)
+	if (bResult) 
 	{
-		if (HitResult.GetActor())
+		if (::IsValid(HitResult.GetActor())) 
 		{
-			ABLOG(Warning, TEXT(" Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
-			
+			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
+
 			FDamageEvent DamageEvent;
-			HitResult.GetActor()->TakeDamage(50.f, DamageEvent, GetController(), this);
+			HitResult.GetActor()->TakeDamage(50.0f, DamageEvent, GetController(), this);
 		}
 	}
 }

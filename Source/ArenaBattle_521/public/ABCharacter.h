@@ -26,7 +26,7 @@ protected:
 
 	enum class EControlMode 
 	{
-		GTA, 
+		GTA,
 		DIABLO
 	};
 
@@ -39,7 +39,7 @@ protected:
 	float ArmLengthSpeed = 0.f;
 	float ArmRotationSpeed = 0.f;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
