@@ -25,10 +25,14 @@ public:
 	UBoxComponent* Trigger;
 	UPROPERTY(VisibleAnywhere, Category = Box)
 	UStaticMeshComponent* Box;
+	UPROPERTY(VisibleAnywhere, Category = Effect)
+	UParticleSystemComponent* Effect;
 	UPROPERTY(VisibleAnywhere, Category = Box)
 	TSubclassOf<class AABWeapon> WeaponItemClass;
 
 private:
 	UFUNCTION()
 	void OnCharacterOverlap(UPrimitiveComponent* _OverlapComp, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult);
+	UFUNCTION()
+	void OnEffectFinished(class UParticleSystemComponent* _PSystem);
 };
