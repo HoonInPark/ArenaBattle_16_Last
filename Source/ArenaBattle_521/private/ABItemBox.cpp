@@ -2,6 +2,7 @@
 
 
 #include "ABItemBox.h"
+#include "ABWeapon.h"
 
 // Sets default values
 AABItemBox::AABItemBox()
@@ -21,6 +22,17 @@ AABItemBox::AABItemBox()
 		Box->SetStaticMesh(SM_BOX.Object);
 
 	Box->SetRelativeLocation(FVector(0.f, -3.5f, -30.f));
+
+	Trigger->SetCollisionProfileName(TEXT("ItemBox"));
+	Box->SetCollisionProfileName(TEXT("NoCollision"));
+
+	WeaponItemClass = AABWeapon::StaticClass();
+}
+
+void AABItemBox::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnCharacterOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -28,4 +40,9 @@ void AABItemBox::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AABItemBox::OnCharacterOverlap(UPrimitiveComponent* _OverlapComp, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult)
+{
+	ABLOG_S(Warning);
 }
