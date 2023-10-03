@@ -27,7 +27,7 @@ public:
 	UStaticMeshComponent* Box;
 	UPROPERTY(VisibleAnywhere, Category = Effect)
 	UParticleSystemComponent* Effect;
-	UPROPERTY(VisibleAnywhere, Category = Box)
+	UPROPERTY(EditInstanceOnly, Category = Box)
 	TSubclassOf<class AABWeapon> WeaponItemClass;
 
 private:

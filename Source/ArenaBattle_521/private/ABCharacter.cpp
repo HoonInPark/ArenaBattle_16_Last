@@ -123,10 +123,12 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	/*
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 	if (nullptr != CurWeapon)
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	*/
 }
 
 void AABCharacter::SetControlMode(EControlMode _NewControlMode)
@@ -226,7 +228,7 @@ void AABCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 bool AABCharacter::CanSetWeapon()
 {
-	return (nullptr != CurrentWeapon);
+	return (nullptr == CurrentWeapon);
 }
 
 void AABCharacter::SetWeapon(AABWeapon* _NewWeapon)
