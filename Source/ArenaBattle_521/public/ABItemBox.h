@@ -20,7 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	UPROPERTY(VisibleAnywhere, Category = Box)
+	UBoxComponent* Trigger;
+	UPROPERTY(VisibleAnywhere, Category = Box)
+	UStaticMeshComponent* Box;
 };
