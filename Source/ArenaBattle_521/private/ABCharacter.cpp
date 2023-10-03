@@ -3,6 +3,7 @@
 
 #include "ABCharacter.h"
 #include "ABAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -35,6 +36,8 @@ AABCharacter::AABCharacter()
 	MaxCombo = 4;
 	AttackEndComboState();
 
+	AttackRange = 200.f;
+	AttackRadius = 50.f;
 }
 
 void AABCharacter::PostInitializeComponents()
@@ -81,6 +84,16 @@ void AABCharacter::PostInitializeComponents()
 		}
 		// Lambda expression ends
 	);
+
+	ABAnim->OnAttackHitCheck.AddUObject(this, &AABCharacter::AttackCheck);
+}
+
+float AABCharacter::TakeDamage(float _DamageAccount, FDamageEvent const& _DamageEvent, AController* _EventInstigator, AActor* _DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(_DamageAccount, _DamageEvent, _EventInstigator, _DamageCauser);
+	ABLOG(Warning, TEXT(" Actor : %s took Damage : %f"), *GetName(), FinalDamage);
+	
+	return FinalDamage;
 }
 
 // Called when the game starts or when spawned
@@ -318,3 +331,49 @@ void AABCharacter::AttackEndComboState()
 	CurrentCombo = 0;
 }
 #pragma endregion SetComboState
+
+void AABCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult, 
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * 200.f,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2,
+		FCollisionShape::MakeSphere(50.f),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.f;
+
+	DrawDebugCapsule(
+		GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime
+	);
+#endif
+
+	if (bResult)
+	{
+		if (HitResult.GetActor())
+		{
+			ABLOG(Warning, TEXT(" Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
+			
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(50.f, DamageEvent, GetController(), this);
+		}
+	}
+}
