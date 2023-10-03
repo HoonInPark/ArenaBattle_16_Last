@@ -5,6 +5,7 @@
 #include "ABAnimInstance.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
+#include "ABWeapon.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -28,6 +29,20 @@ AABCharacter::AABCharacter()
 		GetMesh()->SetSkeletalMesh(SK_CARDBOARD.Object);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ABCharacter")); // 왜 Character의 Collision 이름이 Custom으로 뜰까?
 	ABLOG(Warning, TEXT(" CollisionProfileName : %s"), *GetCapsuleComponent()->GetCollisionProfileName().ToString());
+
+	/*
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/InfinityBladeWeapons/Weapons/Blade/Silly_Weapons/Blade_Finger/SK_Bade_Finger.SK_Bade_Finger"));
+		if (SK_WEAPON.Succeeded())
+			Weapon->SetSkeletalMesh(SK_WEAPON.Object);
+
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
+	*/
 
 	SetControlMode(EControlMode::DIABLO);
 	ArmLengthSpeed = 3.f;
@@ -107,6 +122,11 @@ float AABCharacter::TakeDamage(float _DamageAccount, FDamageEvent const& _Damage
 void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (nullptr != CurWeapon)
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 }
 
 void AABCharacter::SetControlMode(EControlMode _NewControlMode)
@@ -375,7 +395,7 @@ void AABCharacter::AttackCheck()
 
 	if (bResult) 
 	{
-		if (IsValid(HitResult.GetActor()))
+		if (::IsValid(HitResult.GetActor()))
 		{
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
 
