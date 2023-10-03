@@ -7,6 +7,7 @@ UABAnimInstance::UABAnimInstance()
 {
 	CurrentPawnSpeed = 0.f;
 	IsInAir = false;
+	IsDead = false;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(
 		TEXT("/Game/Book/Animations/SK_Mannequin_Skeleton_Montage.SK_Mannequin_Skeleton_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -18,7 +19,9 @@ void UABAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	const auto Pawn = TryGetPawnOwner();
-	if (::IsValid(Pawn))
+	if (!::IsValid(Pawn)) return;
+
+	if (!IsDead)
 	{
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
 		if (const auto Character = Cast<ACharacter>(Pawn))
@@ -32,6 +35,8 @@ void UABAnimInstance::PlayAttackMontage()
 	// if (!Montage_IsPlaying(AttackMontage))
 	// 	Montage_Play(AttackMontage, 1.f);
 
+	ABCHECK(!IsDead);
+
 	Montage_Play(AttackMontage, 1.f);
 }
 
@@ -41,6 +46,8 @@ void UABAnimInstance::PlayAttackMontage()
 */
 void UABAnimInstance::JumpToAttackMontageSection(int32 _NewSection)
 {
+	ABCHECK(!IsDead);
+
 	// Montage_IsPlaying()는 델리게이트는 아니고 그때마다 Montage가 실행되고 있는지 확인하는 함수이다.
 	ABCHECK(Montage_IsPlaying(AttackMontage));
 	ABLOG(Warning, TEXT(" Montage_IsPlaying(AttackMontage) : %d"), Montage_IsPlaying(AttackMontage));

@@ -94,6 +94,12 @@ float AABCharacter::TakeDamage(float _DamageAccount, FDamageEvent const& _Damage
 	float FinalDamage = Super::TakeDamage(_DamageAccount, _DamageEvent, _EventInstigator, _DamageCauser);
 	ABLOG(Warning, TEXT(" Actor : %s took Damage : %f"), *GetName(), FinalDamage);
 	
+	if (FinalDamage > 0.f)
+	{
+		ABAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+	}
+
 	return FinalDamage;
 }
 
@@ -369,7 +375,7 @@ void AABCharacter::AttackCheck()
 
 	if (bResult) 
 	{
-		if (::IsValid(HitResult.GetActor())) 
+		if (IsValid(HitResult.GetActor()))
 		{
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
 
